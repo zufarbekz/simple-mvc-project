@@ -61,17 +61,8 @@ public class BooksShelfController {
 
     @PostMapping("/remove/id")
     public String deleteBook(@RequestParam(value = "bookID") String idStr){
-        int bookID;
-        if (!idStr.equals("")){
-            try{
-                bookID = Integer.parseInt(idStr);
-            }catch (NumberFormatException ex) {
-                logger.info("Wrong Input:  " + idStr);
-                return "redirect:/books/shelf";
-            }
-            bookService.removeByID(idStr);
-            logger.info("---Book Successfully deleted!");
-        }
+        bookService.removeByID(idStr);
+        logger.info("---Book Successfully deleted!");
         return "redirect:/books/shelf";
     }
 

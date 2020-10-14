@@ -37,4 +37,12 @@ public class BookService {
     public List<Book> searchBook(String searchAuthor, String searchTitle){
        return bookRepo.find(searchAuthor, searchTitle);
     }
+
+    private void defaultInit(){
+        logger.info("Default Init in BookService");
+    }
+
+    private void defaultDestroy(){
+        logger.info("Default Destroy in BookService");
+    }
 }

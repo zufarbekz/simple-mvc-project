@@ -5,8 +5,15 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context
-       https://www.springframework.org/schema/context/spring-context.xsd">
+       https://www.springframework.org/schema/context/spring-context.xsd"
+       default-init-method="defaultInit" default-destroy-method="defaultDestroy">
 
     <context:component-scan base-package="org.example.app"/>
+
+    <bean id="idProvider"
+          class="org.example.app.services.IdProvider"
+          scope="prototype"
+          init-method="initIdProvider"
+          destroy-method="destroyIdProvider"/>
 
 </beans>

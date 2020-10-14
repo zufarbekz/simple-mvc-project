@@ -26,7 +26,7 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
 
     @Override
     public void store(Book book) {
-        book.setId(String.valueOf(book.hashCode()));
+        book.setId(context.getBean(IdProvider.class).provideID(book));
         logger.info("store new book: " + book);
         repo.add(book);
     }
@@ -118,6 +118,14 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
+    }
+
+    private void defaultInit(){
+        logger.info("Default Init in BookRepository");
+    }
+
+    private void defaultDestroy(){
+        logger.info("Default Destroy in BookRepository");
     }
 
 }
