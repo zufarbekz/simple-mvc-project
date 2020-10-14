@@ -2,12 +2,14 @@ package org.example.web.controllers;
 
 import org.example.app.services.BookService;
 import org.example.web.dto.Book;
+import org.example.web.dto.BookIdToRemove;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
+
+import javax.validation.Valid;
 
 
 @Controller
@@ -35,36 +39,47 @@ public class BooksShelfController {
     public String books(Model model){
         logger.info("---GET books/shelf page");
         model.addAttribute("book", new Book());
+        model.addAttribute("bookIdToRemove", new BookIdToRemove());
         model.addAttribute("bookList", bookService.getAllBooks());
         return "books_shelf";
     }
 
     @PostMapping("/save")
-    public String saveBooks(Book book){
-        if (!book.getSize().equals("")){
-            try{
-                Integer size = Integer.parseInt(book.getSize());
-            }catch (NumberFormatException ex) {
-                logger.info("Wrong Input:  " + book.getSize());
-                return "redirect:/books/shelf";
-            }
-        }
-        // Исключить возможность сохранения пустых записей
-        if (!book.getTitle().equals("") || !book.getAuthor().equals("")){
-            bookService.saveBook(book);
-            logger.info("Successfully saved! Total books: " + bookService.getAllBooks().size());
+    public String saveBooks(@Valid Book book,
+                            BindingResult bindingResult,
+                            Model model){
+        if (bindingResult.hasErrors()){
+            model.addAttribute("book",book);
+            model.addAttribute("bookIdToRemove", new BookIdToRemove());
+            model.addAttribute("bookList", bookService.getAllBooks());
+            return "books_shelf";
         }else {
-            logger.info("!!! Necessary fields of book NOT entered");
+            // Исключить возможность сохранения пустых записей
+            if (!book.getTitle().equals("") || !book.getAuthor().equals("")) {
+                bookService.saveBook(book);
+                logger.info("Successfully saved! Total books: " + bookService.getAllBooks().size());
+            } else {
+                logger.info("!!! Necessary fields of book NOT entered");
+            }
+            return "redirect:/books/shelf";
         }
-        return "redirect:/books/shelf";
     }
 
     @PostMapping("/remove/id")
-    public String deleteBook(@RequestParam(value = "bookID") String idStr){
-        bookService.removeByID(idStr);
-        logger.info("---Book Successfully deleted!");
-        return "redirect:/books/shelf";
+    public String deleteBook(@Valid BookIdToRemove bookIdToRemove,
+                             BindingResult bindingResult,
+                             Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("book", new Book());
+            model.addAttribute("bookList", bookService.getAllBooks());
+            return "books_shelf";
+        } else {
+            bookService.removeByID(bookIdToRemove.getId());
+            logger.info("---Book Successfully deleted!");
+            return "redirect:/books/shelf";
+        }
     }
+
 
     @PostMapping("/remove")
     public String deleteBook(@RequestParam(value = "bookAuthor") String bookAuthor,
@@ -93,6 +108,7 @@ public class BooksShelfController {
                              Model model){
         logger.info("---GET books/shelf page");
         model.addAttribute("book", new Book());
+        model.addAttribute("bookIdToRemove", new BookIdToRemove());
         model.addAttribute("bookList",  bookService.searchBook(searchAuthor, searchTitle));
         return "books_shelf";
     }

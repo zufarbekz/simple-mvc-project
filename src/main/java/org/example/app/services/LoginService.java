@@ -17,7 +17,7 @@ public class LoginService {
 
     public boolean authenticate(LoginForm loginForm){
        //Интерфейс и логика регистрации нового пользователя
-        if (loginForm.getUsername().equals("") && loginForm.getPassword().equals("")){
+        if (loginForm.getUsername().equals("") || loginForm.getPassword().equals("")){
             logger.info("Necessary information is NOT entered!");
             return false;
         }

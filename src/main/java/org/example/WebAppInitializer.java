@@ -1,10 +1,9 @@
 package org.example;
 
 import org.apache.log4j.Logger;
-import org.example.web.WebContextConfig;
+import org.example.web.config.WebContextConfig;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
