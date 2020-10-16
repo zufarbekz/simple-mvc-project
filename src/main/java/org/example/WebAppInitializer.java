@@ -1,7 +1,9 @@
 package org.example;
 
 import org.apache.log4j.Logger;
+import org.example.app.config.AppContextConfig;
 import org.example.web.config.WebContextConfig;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -19,9 +21,17 @@ public class WebAppInitializer implements WebApplicationInitializer {
     public void onStartup(ServletContext servletContext) throws ServletException {
 
         logger.info("Loading app-config");
-        XmlWebApplicationContext appContext = new XmlWebApplicationContext();
-        appContext.setConfigLocation("classpath:app-config.xml");
+
+            //with app-config.xml
+        //XmlWebApplicationContext appContext = new XmlWebApplicationContext();
+        //appContext.setConfigLocation("classpath:app-config.xml");
+
+           //without app-config.xml
+        AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();
+        appContext.register(AppContextConfig.class);
+
         servletContext.addListener(new ContextLoaderListener(appContext));
+
 
         logger.info("Loading web-config");
         //with web-config.xml

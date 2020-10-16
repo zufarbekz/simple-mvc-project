@@ -62,7 +62,23 @@
       <artifactId>hibernate-validator</artifactId>
       <version>6.1.6.Final</version>
     </dependency>
-
+        <!-- Security -->
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-core</artifactId>
+      <version>5.0.17.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-web</artifactId>
+      <version>5.0.17.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-config</artifactId>
+      <version>5.0.17.RELEASE</version>
+    </dependency>
+        <!-- Security -->
 
   </dependencies>
 
