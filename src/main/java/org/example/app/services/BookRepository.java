@@ -1,6 +1,7 @@
 package org.example.app.services;
 
 import org.apache.log4j.Logger;
+import org.example.web.config.DBConfig;
 import org.example.web.controllers.BooksShelfController;
 import org.example.web.dto.Book;
 import org.springframework.beans.BeansException;
@@ -19,21 +20,20 @@ import java.util.List;
 public class BookRepository implements ProjectRepository<Book>, ApplicationContextAware {
 
     private final Logger logger = Logger.getLogger(BooksShelfController.class);
-    private final List<Book> repo = new ArrayList<>();
+    //private List<Book> repo = new ArrayList<>();
     private ApplicationContext context;
-    private final int booksSize = repo.size();
+    //private final int booksSize = repo.size();
 
-   // private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
-   /* @Autowired
-    public BookRepository(NamedParameterJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    @Autowired
+    public BookRepository() {
+        DBConfig dbConfig = new DBConfig();
+        this.jdbcTemplate = dbConfig.namedParameterJdbcTemplate();
     }
-*/
 
     @Override
     public List<Book> retrieveAll() {
-       /* assert jdbcTemplate != null;
         List<Book> books = jdbcTemplate.query("SELECT * FROM books",
                 (ResultSet rs, int rowNum) -> {
             Book book = new Book();
@@ -42,16 +42,16 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
             book.setTitle(rs.getString("title"));
             book.setSize(rs.getInt("size"));
             return book;
-                });*/
+                });
 
-        return new ArrayList(repo);
+        return new ArrayList(books);
     }
 
     @Override
     public void store(Book book) {
-        book.setId(context.getBean(IdProvider.class).provideID(book));
+        //book.setId(context.getBean(IdProvider.class).provideID(book));
         logger.info("store new book: " + book);
-        repo.add(book);
+       // repo.add(book);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
         for (Book book : retrieveAll()) {
             if (book.getId().equals(bookID)){
                 logger.info("remove book completed:" + book);
-                repo.remove(book);
+               // repo.remove(book);
             }else{
                 logger.info("Wrong input(book ID)");
             }
@@ -74,48 +74,48 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
 
         if (author.length() != 0 && title.length() != 0){
           removeByTitleAndAuthor(author,title);
-          logger.info("--- Books size: " + repo.size());
+     //     logger.info("--- Books size: " + repo.size());
         }else {
             if (author.length() != 0) {
                removeByAuthor(author);
-              logger.info("--- Books size: " + repo.size());
+        //      logger.info("--- Books size: " + repo.size());
             }
             if (title.length() != 0) {
             removeByTitle(title);
-               logger.info("--- Books size: " + repo.size());
+         //      logger.info("--- Books size: " + repo.size());
             }
             if (size != null) {
                 logger.info("---Not Enough Information ");
             }
         }
-        return booksSize != repo.size();
+        return true;// booksSize != repo.size();
     }
 
     private void removeByTitle(String title) {
-        for (int i = 0; i < repo.size(); i++) {
-            if (repo.get(i).getTitle().equals(title)){
-                repo.remove(repo.get(i));
-                logger.info("-Book with title: " + title + " deleted");
-            }
-        }
+//        for (int i = 0; i < repo.size(); i++) {
+//            if (repo.get(i).getTitle().equals(title)){
+//                repo.remove(repo.get(i));
+//                logger.info("-Book with title: " + title + " deleted");
+//            }
+//        }
     }
 
     private void removeByAuthor(String author) {
-        for (int i = 0; i < repo.size(); i++) {
-            if (repo.get(i).getAuthor().equals(author)){
-                repo.remove(repo.get(i));
-                logger.info("-Book with author: " + author + " deleted");
-            }
-        }
+//        for (int i = 0; i < repo.size(); i++) {
+//            if (repo.get(i).getAuthor().equals(author)){
+//                repo.remove(repo.get(i));
+//                logger.info("-Book with author: " + author + " deleted");
+//            }
+//        }
     }
 
     private void removeByTitleAndAuthor(String author, String title) {
-        for (int i = 0; i < repo.size(); i++) {
-            if (repo.get(i).getAuthor().equals(author) && repo.get(i).getTitle().equals(title)){
-                repo.remove(repo.get(i));
-                logger.info("-Book with author and title: " + author + " "+ title + " deleted");
-            }
-        }
+//        for (int i = 0; i < repo.size(); i++) {
+//            if (repo.get(i).getAuthor().equals(author) && repo.get(i).getTitle().equals(title)){
+//                repo.remove(repo.get(i));
+//                logger.info("-Book with author and title: " + author + " "+ title + " deleted");
+//            }
+//        }
     }
 
     @Override
