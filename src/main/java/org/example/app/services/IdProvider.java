@@ -13,8 +13,8 @@ import javax.annotation.PreDestroy;
 public class IdProvider implements InitializingBean, DisposableBean, BeanPostProcessor {
     Logger logger = Logger.getLogger(IdProvider.class);
 
-    public String provideID(Book book) {
-        return this.hashCode() + "_" + book.hashCode();
+    public Integer provideID(Book book) {
+        return this.hashCode() + book.hashCode();
     }
 
     private void destroyIdProvider() {

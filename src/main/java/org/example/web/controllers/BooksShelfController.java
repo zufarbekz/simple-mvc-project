@@ -84,17 +84,10 @@ public class BooksShelfController {
     @PostMapping("/remove")
     public String deleteBook(@RequestParam(value = "bookAuthor") String bookAuthor,
                              @RequestParam(value = "bookTitle") String bookTitle,
-                             @RequestParam(value = "bookSize") String bookSize){
+                             @RequestParam(value = "bookSize") Integer bookSize){
         if(bookAuthor.equals("") && bookTitle.equals("") && bookSize.equals("")) {
             logger.info("--- Necessary information is NOT entered");
         }else{
-            if (!bookSize.equals("")){
-                try{
-                    Integer.parseInt(bookSize);
-                }catch (NumberFormatException ex) {
-                    logger.info("Wrong Input:  " + bookSize);
-                }
-            }
             if (bookService.removeByItem(bookAuthor, bookTitle, bookSize)){
                 logger.info("---Removing Book(s) Completed!");
             }
