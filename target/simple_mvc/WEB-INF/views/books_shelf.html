@@ -103,6 +103,19 @@
             </table>
         </form>
 
+        <form method="post" th:action="@{/books/uploadFile}" enctype="multipart/form-data">
+            <table>
+                <tr>
+                    <td>
+                        <input type="file" name="file"/>
+                    </td>
+                    <td>
+                        <input type = "submit" value="upload">
+                    </td>
+                </tr>
+            </table>
+        </form>
+
         <table id="books">
             <tr>
                 <th>id</th>
