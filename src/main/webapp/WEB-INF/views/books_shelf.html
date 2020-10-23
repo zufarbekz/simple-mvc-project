@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <title>My Book Shelf</title>
     <style>
+        p{
+            color: red;
+            font-family: Arial;
+        }
         #root_container{
             position: absolute;
             left: 50%;
@@ -34,14 +38,16 @@
         <table>
             <tr>
                 <td>
-                <input type="text" placeholder="author" th:field="*{author}">
+                    <p th:if="${#fields.hasErrors('author')}"> Please enter the AUTHOR of the book </p>
+                    <input type="text" placeholder="author" th:field="*{author}">
                 </td>
                 <td>
-                <input type="text" placeholder="title" th:field="*{title}">
+                    <p th:if="${#fields.hasErrors('title')}"> Please enter the TITLE of the book </p>
+                    <input type="text" placeholder="title" th:field="*{title}">
                 </td>
                 <td>
+                    <p th:if="${#fields.hasErrors('size')}"> SIZE value must be digit and less than 5 signs</p>
                     <input type="text" placeholder="size(pages)" th:field="*{size}">
-                    <p th:if="${#fields.hasErrors()}"> field value must be digit and less than 5 signs</p>
                 </td>
                 <td>
                 <input type="submit" value="save">

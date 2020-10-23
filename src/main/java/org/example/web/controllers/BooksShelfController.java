@@ -53,6 +53,7 @@ public class BooksShelfController {
     public String saveBooks(@Valid Book book,
                             BindingResult bindingResult,
                             Model model){
+
         if (bindingResult.hasErrors()){
             model.addAttribute("book",book);
             model.addAttribute("bookIdToRemove", new BookIdToRemove());
