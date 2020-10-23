@@ -14,4 +14,8 @@ public class ErrorController {
         return "errors/404";
     }
 
+    @GetMapping("/505")
+    public String serverError(){
+        return "errors/505";
+    }
 }

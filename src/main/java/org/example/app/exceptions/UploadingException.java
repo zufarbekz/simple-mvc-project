@@ -1,11 +1,9 @@
 package org.example.app.exceptions;
 
+public class UploadingException extends Exception {
+    String message;
 
-public class BooksShelfLoginException extends Exception {
-
-    private String message;
-
-    public BooksShelfLoginException(String message) {
+    public UploadingException(String message) {
         this.message = message;
     }
 
