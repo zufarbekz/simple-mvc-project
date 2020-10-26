@@ -24,6 +24,8 @@ import org.apache.log4j.Logger;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotBlank;
 
 
 @Controller
@@ -87,9 +89,9 @@ public class BooksShelfController {
 
 
     @PostMapping("/remove")
-    public String deleteBook(@RequestParam(value = "bookAuthor") String bookAuthor,
-                             @RequestParam(value = "bookTitle") String bookTitle,
-                             @RequestParam(value = "bookSize") Integer bookSize){
+    public String deleteBook(@RequestParam(value = "bookAuthor") @NotBlank String bookAuthor,
+                             @RequestParam(value = "bookTitle") @NotBlank String bookTitle,
+                             @RequestParam(value = "bookSize") @Digits(integer = 5, fraction = 0) Integer bookSize){
         if(bookAuthor.equals("") && bookTitle.equals("") && bookSize.equals("")) {
             logger.info("--- Necessary information is NOT entered");
         }else{

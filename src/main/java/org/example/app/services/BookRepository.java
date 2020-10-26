@@ -69,30 +69,39 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
 
     @Override
     public boolean removeItem(Book book) {
+        boolean isRemoved = false;
         String author = book.getAuthor();
         String title = book.getTitle();
         Integer size = book.getSize();
 
         if (author.length() != 0 && title.length() != 0){
           removeByTitleAndAuthor(author,title);
+          isRemoved= true;
      //     logger.info("--- Books size: " + repo.size());
         }else {
             if (author.length() != 0) {
                removeByAuthor(author);
+               isRemoved =true;
         //      logger.info("--- Books size: " + repo.size());
             }
             if (title.length() != 0) {
             removeByTitle(title);
+            isRemoved = true;
          //      logger.info("--- Books size: " + repo.size());
             }
             if (size != null) {
                 logger.info("---Not Enough Information ");
+                isRemoved =false;
             }
         }
-        return true;// booksSize != repo.size();
+        return isRemoved;
     }
 
     private void removeByTitle(String title) {
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+        parameterSource.addValue("title", title);
+        jdbcTemplate.update("DELETE FROM books WHERE title = :title", parameterSource);
+
 //        for (int i = 0; i < repo.size(); i++) {
 //            if (repo.get(i).getTitle().equals(title)){
 //                repo.remove(repo.get(i));
@@ -102,6 +111,10 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
     }
 
     private void removeByAuthor(String author) {
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+        parameterSource.addValue("author", author);
+        jdbcTemplate.update("DELETE FROM books WHERE author = :author", parameterSource);
+
 //        for (int i = 0; i < repo.size(); i++) {
 //            if (repo.get(i).getAuthor().equals(author)){
 //                repo.remove(repo.get(i));
@@ -111,6 +124,11 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
     }
 
     private void removeByTitleAndAuthor(String author, String title) {
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+        parameterSource.addValue("title", title);
+        parameterSource.addValue("author", author);
+        jdbcTemplate.update("DELETE FROM books WHERE title = :title AND author = :author", parameterSource);
+
 //        for (int i = 0; i < repo.size(); i++) {
 //            if (repo.get(i).getAuthor().equals(author) && repo.get(i).getTitle().equals(title)){
 //                repo.remove(repo.get(i));
