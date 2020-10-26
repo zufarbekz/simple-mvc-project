@@ -2,33 +2,23 @@ package org.example.web.dto;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 
-public class Book {
-    private Integer id;
-    @NotBlank
+public class BookToRemove {
+    @NotEmpty
     private String author;
-    @NotBlank
+    @NotEmpty
     private String title;
     @Digits(integer = 5, fraction = 0)
     private Integer size;
 
-    public Book() {
+    public BookToRemove() {
     }
 
-    public Book(Integer id, String author, String title, Integer size) {
-        this.id = id;
+    public BookToRemove(String author, String title, Integer size) {
         this.author = author;
         this.title = title;
         this.size = size;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getAuthor() {
@@ -54,15 +44,4 @@ public class Book {
     public void setSize(Integer size) {
         this.size = size;
     }
-
-    @Override
-    public String toString() {
-        return "Book{" +
-                "id=" + id +
-                ", author='" + author + '\'' +
-                ", title='" + title + '\'' +
-                ", size=" + size +
-                '}';
-    }
-
 }

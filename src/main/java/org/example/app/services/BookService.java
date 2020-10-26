@@ -1,6 +1,7 @@
 package org.example.app.services;
 
 import org.example.web.dto.Book;
+import org.example.web.dto.BookToRemove;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -29,9 +30,8 @@ public class BookService {
         bookRepo.removeItemByID(bookID);
     }
 
-    public boolean removeByItem(String author, String title, Integer size){
-      Book book = new Book(author,title,size);
-      return  bookRepo.removeItem(book);
+    public boolean removeByItem(BookToRemove bookToRemove){
+      return  bookRepo.removeItem(bookToRemove);
     }
 
     public List<Book> searchBook(String searchAuthor, String searchTitle){

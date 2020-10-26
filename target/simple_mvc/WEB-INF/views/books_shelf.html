@@ -7,6 +7,7 @@
         p{
             color: red;
             font-family: Arial;
+            font-style: italic;
         }
         #root_container{
             position: absolute;
@@ -73,20 +74,20 @@
     </form>
 
 
-    <form method="post" th:action="@{/books/remove}">
+    <form method="post" th:action="@{/books/remove}" th:object="${bookToRemove}">
         <table>
             <tr>
                 <td>
-
-                    <input type="text" placeholder="books' author" th:name="author">
+                    <p th:if="${#fields.hasErrors('author')}"> Please enter the AUTHOR of the book </p>
+                    <input type="text" placeholder="author" th:field="*{author}">
                 </td>
                 <td>
-
-                    <input type="text" placeholder="books' title" th:name="title">
+                    <p th:if="${#fields.hasErrors('title')}"> Please enter the TITLE of the book </p>
+                    <input type="text" placeholder="title" th:field="*{title}">
                 </td>
                 <td>
-
-                    <input type="text" placeholder="books' size" th:name="size">
+                    <p th:if="${#fields.hasErrors('size')}"> SIZE value must be digit and less than 5 signs</p>
+                    <input type="text" placeholder="size(pages)" th:field="*{size}">
                 </td>
                 <td>
                     <input type="submit" value="remove">

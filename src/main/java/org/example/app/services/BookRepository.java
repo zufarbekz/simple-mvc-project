@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.example.web.config.DBConfig;
 import org.example.web.controllers.BooksShelfController;
 import org.example.web.dto.Book;
+import org.example.web.dto.BookToRemove;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -68,26 +69,23 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
     }
 
     @Override
-    public boolean removeItem(Book book) {
+    public boolean removeItem(BookToRemove bookToRemove) {
         boolean isRemoved = false;
-        String author = book.getAuthor();
-        String title = book.getTitle();
-        Integer size = book.getSize();
+        String author = bookToRemove.getAuthor();
+        String title = bookToRemove.getTitle();
+        Integer size = bookToRemove.getSize();
 
         if (author.length() != 0 && title.length() != 0){
           removeByTitleAndAuthor(author,title);
           isRemoved= true;
-     //     logger.info("--- Books size: " + repo.size());
         }else {
             if (author.length() != 0) {
                removeByAuthor(author);
                isRemoved =true;
-        //      logger.info("--- Books size: " + repo.size());
             }
             if (title.length() != 0) {
             removeByTitle(title);
             isRemoved = true;
-         //      logger.info("--- Books size: " + repo.size());
             }
             if (size != null) {
                 logger.info("---Not Enough Information ");

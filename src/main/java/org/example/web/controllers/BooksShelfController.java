@@ -4,6 +4,7 @@ import org.example.app.exceptions.UploadingException;
 import org.example.app.services.BookService;
 import org.example.web.dto.Book;
 import org.example.web.dto.BookIdToRemove;
+import org.example.web.dto.BookToRemove;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpHeaders;
@@ -46,6 +47,7 @@ public class BooksShelfController {
         logger.info("---GET books/shelf page");
         model.addAttribute("book", new Book());
         model.addAttribute("bookIdToRemove", new BookIdToRemove());
+        model.addAttribute("bookToRemove", new BookToRemove());
         model.addAttribute("bookList", bookService.getAllBooks());
         return "books_shelf";
     }
@@ -58,6 +60,7 @@ public class BooksShelfController {
         if (bindingResult.hasErrors()){
             model.addAttribute("book",book);
             model.addAttribute("bookIdToRemove", new BookIdToRemove());
+            model.addAttribute("bookToRemove", new BookToRemove());
             model.addAttribute("bookList", bookService.getAllBooks());
             return "books_shelf";
         }else {
@@ -79,6 +82,7 @@ public class BooksShelfController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("book", new Book());
             model.addAttribute("bookList", bookService.getAllBooks());
+            model.addAttribute("bookToRemove", new BookToRemove());
             return "books_shelf";
         } else {
             bookService.removeByID(bookIdToRemove.getId());
@@ -89,17 +93,20 @@ public class BooksShelfController {
 
 
     @PostMapping("/remove")
-    public String deleteBook(@RequestParam(value = "bookAuthor") @NotBlank String bookAuthor,
-                             @RequestParam(value = "bookTitle") @NotBlank String bookTitle,
-                             @RequestParam(value = "bookSize") @Digits(integer = 5, fraction = 0) Integer bookSize){
-        if(bookAuthor.equals("") && bookTitle.equals("") && bookSize.equals("")) {
-            logger.info("--- Necessary information is NOT entered");
-        }else{
-            if (bookService.removeByItem(bookAuthor, bookTitle, bookSize)){
+    public String deleteBook(@Valid BookToRemove bookToRemove,
+                             BindingResult bindingResult,
+                             Model model){
+        if ((bindingResult.hasFieldErrors("author") && bindingResult.hasFieldErrors("title")) || bindingResult.hasFieldErrors("size")) {
+                model.addAttribute("book", bookToRemove);
+                model.addAttribute("bookIdToRemove", new BookIdToRemove());
+                model.addAttribute("bookList", bookService.getAllBooks());
+                return "books_shelf";
+        }else {
+            if (bookService.removeByItem(bookToRemove) ){
                 logger.info("---Removing Book(s) Completed!");
             }
+            return "redirect:/books/shelf";
         }
-        return "redirect:/books/shelf";
     }
 
     @PostMapping("/search")
@@ -109,6 +116,7 @@ public class BooksShelfController {
         logger.info("---GET books/shelf page");
         model.addAttribute("book", new Book());
         model.addAttribute("bookIdToRemove", new BookIdToRemove());
+        model.addAttribute("bookToRemove", new BookToRemove());
         model.addAttribute("bookList",  bookService.searchBook(searchAuthor, searchTitle));
         return "books_shelf";
     }
