@@ -79,20 +79,40 @@ public class BookRepository implements ProjectRepository<Book>, ApplicationConte
           removeByTitleAndAuthor(author,title);
           isRemoved= true;
         }else {
-            if (author.length() != 0) {
-               removeByAuthor(author);
-               isRemoved =true;
+            if(author.length() != 0 && size != null){
+                removeByAuthorAndSize(author,size);
+                isRemoved=true;
+            }else{
+                if (author.length() != 0) {
+                    removeByAuthor(author);
+                    isRemoved =true;
+                }
             }
-            if (title.length() != 0) {
-            removeByTitle(title);
-            isRemoved = true;
-            }
-            if (size != null) {
-                logger.info("---Not Enough Information ");
-                isRemoved =false;
+            if(title.length() != 0 && size != null){
+                removeByTitleAndSize(title,size);
+                isRemoved=true;
+            }else {
+                if (title.length() != 0) {
+                    removeByTitle(title);
+                    isRemoved = true;
+                }
             }
         }
         return isRemoved;
+    }
+
+    private void removeByTitleAndSize(String title, Integer size) {
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+        parameterSource.addValue("title", title);
+        parameterSource.addValue("size", size);
+        jdbcTemplate.update("DELETE FROM books WHERE title = :title AND size = :size", parameterSource);
+    }
+
+    private void removeByAuthorAndSize(String author, Integer size) {
+        MapSqlParameterSource parameterSource = new MapSqlParameterSource();
+        parameterSource.addValue("author", author);
+        parameterSource.addValue("size", size);
+        jdbcTemplate.update("DELETE FROM books WHERE author = :author AND size = :size", parameterSource);
     }
 
     private void removeByTitle(String title) {

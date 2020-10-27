@@ -5,6 +5,7 @@ import org.example.app.services.BookService;
 import org.example.web.dto.Book;
 import org.example.web.dto.BookIdToRemove;
 import org.example.web.dto.BookToRemove;
+import org.example.web.dto.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpHeaders;
@@ -48,6 +49,7 @@ public class BooksShelfController {
         model.addAttribute("book", new Book());
         model.addAttribute("bookIdToRemove", new BookIdToRemove());
         model.addAttribute("bookToRemove", new BookToRemove());
+        model.addAttribute("filter", new Filter());
         model.addAttribute("bookList", bookService.getAllBooks());
         return "books_shelf";
     }
@@ -61,6 +63,7 @@ public class BooksShelfController {
             model.addAttribute("book",book);
             model.addAttribute("bookIdToRemove", new BookIdToRemove());
             model.addAttribute("bookToRemove", new BookToRemove());
+            model.addAttribute("filter", new Filter());
             model.addAttribute("bookList", bookService.getAllBooks());
             return "books_shelf";
         }else {
@@ -83,6 +86,7 @@ public class BooksShelfController {
             model.addAttribute("book", new Book());
             model.addAttribute("bookList", bookService.getAllBooks());
             model.addAttribute("bookToRemove", new BookToRemove());
+            model.addAttribute("filter", new Filter());
             return "books_shelf";
         } else {
             bookService.removeByID(bookIdToRemove.getId());
@@ -99,6 +103,7 @@ public class BooksShelfController {
         if ((bindingResult.hasFieldErrors("author") && bindingResult.hasFieldErrors("title")) || bindingResult.hasFieldErrors("size")) {
                 model.addAttribute("book", bookToRemove);
                 model.addAttribute("bookIdToRemove", new BookIdToRemove());
+                model.addAttribute("filter", new Filter());
                 model.addAttribute("bookList", bookService.getAllBooks());
                 return "books_shelf";
         }else {
@@ -110,14 +115,21 @@ public class BooksShelfController {
     }
 
     @PostMapping("/search")
-    public String searchBook(@RequestParam(value = "searchAuthor") String searchAuthor,
-                             @RequestParam(value = "searchTitle") String searchTitle,
+    public String searchBook(@Valid Filter filter,
+                             BindingResult bindingResult,
                              Model model){
-        logger.info("---GET books/shelf page");
-        model.addAttribute("book", new Book());
-        model.addAttribute("bookIdToRemove", new BookIdToRemove());
-        model.addAttribute("bookToRemove", new BookToRemove());
-        model.addAttribute("bookList",  bookService.searchBook(searchAuthor, searchTitle));
+        if (bindingResult.hasFieldErrors("searchAuthor") && bindingResult.hasFieldErrors("searchTitle")){
+            model.addAttribute("book", new Book());
+            model.addAttribute("bookIdToRemove", new BookIdToRemove());
+            model.addAttribute("bookToRemove", new BookToRemove());
+            model.addAttribute("bookList", bookService.getAllBooks());
+        }else {
+            logger.info("---GET books/shelf page");
+            model.addAttribute("book", new Book());
+            model.addAttribute("bookIdToRemove", new BookIdToRemove());
+            model.addAttribute("bookToRemove", new BookToRemove());
+            model.addAttribute("bookList", bookService.searchBook(filter.getSearchAuthor(), filter.getSearchTitle()));
+        }
         return "books_shelf";
     }
 

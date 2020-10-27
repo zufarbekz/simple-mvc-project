@@ -97,14 +97,16 @@
     </form>
 
         <hr>
-        <form method="post" th:action="@{/books/search}">
+        <form method="post" th:action="@{/books/search}" th:object="${filter}">
             <table>
                 <tr>
                     <td>
-                        <input type="text" placeholder="author" th:name="searchAuthor">
+                        <p th:if="${#fields.hasErrors('searchAuthor')}"> Please enter the AUTHOR of the book </p>
+                        <input type="text" placeholder="author" th:field="*{searchAuthor}">
                     </td>
                     <td>
-                        <input type="text" placeholder="title" th:name="searchTitle">
+                        <p th:if="${#fields.hasErrors('searchTitle')}"> Please enter the TITLE of the book </p>
+                        <input type="text" placeholder="title" th:field="*{searchTitle}">
                     </td>
                     <td>
                         <input type="submit" value="search">
