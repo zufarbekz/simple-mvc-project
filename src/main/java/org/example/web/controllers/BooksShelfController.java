@@ -1,5 +1,6 @@
 package org.example.web.controllers;
 
+import org.apache.commons.io.IOUtils;
 import org.example.app.exceptions.UploadingException;
 import org.example.app.services.BookService;
 import org.example.web.dto.Book;
@@ -8,23 +9,34 @@ import org.example.web.dto.BookToRemove;
 import org.example.web.dto.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
@@ -134,7 +146,7 @@ public class BooksShelfController {
     }
 
     @PostMapping("/uploadFile")
-    public String uploadFile(@RequestParam("file")MultipartFile file) throws IOException, UploadingException {
+    public String uploadFile(@RequestParam("file")MultipartFile file) throws  UploadingException {
         try {
             String name = file.getOriginalFilename();
             byte[] bytes = file.getBytes();
@@ -156,8 +168,34 @@ public class BooksShelfController {
 
             return "redirect:/books/shelf";
         }catch (Exception exception){
-            throw new UploadingException("Please Choose the File");
+            throw new UploadingException("Please Choose the File to Upload");
         }
+    }
+
+    @GetMapping("/downloadFile")
+    public String download(HttpServletRequest request,
+                         HttpServletResponse response) {
+        File file =new File("D:\\apache-tomcat-9.0.37\\external_uploads\\text.txt");
+        try
+        {
+            InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+            String mimeType = URLConnection.guessContentTypeFromStream(inputStream);
+
+            if (mimeType == null){
+                mimeType = "application/octet-stream";
+            }
+
+            response.setContentType(mimeType);
+            response.setContentLength((int)file.length());
+            response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
+
+            FileCopyUtils.copy(inputStream, response.getOutputStream());
+
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return "redirect:/books/shelf";
     }
 
     @ExceptionHandler(UploadingException.class)
