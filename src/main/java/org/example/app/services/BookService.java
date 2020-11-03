@@ -30,8 +30,8 @@ public class BookService {
         bookRepo.removeItemByID(bookID);
     }
 
-    public boolean removeByItem(BookToRemove bookToRemove){
-      return  bookRepo.removeItem(bookToRemove);
+    public void removeByItem(BookToRemove bookToRemove){
+        bookRepo.removeItem(bookToRemove);
     }
 
     public List<Book> searchBook(String searchAuthor, String searchTitle){

@@ -1,12 +1,11 @@
 package org.example.web.dto;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 public class Filter {
-    @NotNull
+    @NotEmpty
     private String searchAuthor;
-    @NotNull
+    @NotEmpty
     private String searchTitle;
 
     public Filter() {

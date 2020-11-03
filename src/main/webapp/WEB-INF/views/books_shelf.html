@@ -101,11 +101,11 @@
             <table>
                 <tr>
                     <td>
-                        <p th:if="${#fields.hasErrors('searchAuthor')}"> Please enter the AUTHOR of the book </p>
+                        <p th:if="${#fields.hasErrors('searchAuthor') && #fields.hasErrors('searchTitle')}"> Please enter the AUTHOR of the book </p>
                         <input type="text" placeholder="author" th:field="*{searchAuthor}">
                     </td>
                     <td>
-                        <p th:if="${#fields.hasErrors('searchTitle')}"> Please enter the TITLE of the book </p>
+                        <p th:if="${#fields.hasErrors('searchTitle') && #fields.hasErrors('searchAuthor')}"> Please enter the TITLE of the book </p>
                         <input type="text" placeholder="title" th:field="*{searchTitle}">
                     </td>
                     <td>
@@ -122,7 +122,7 @@
                         <input type="file" name="file"/>
                     </td>
                     <td>
-                        <input type = "submit" value="upload">
+                        <input type = "submit" value="Click to Upload">
                     </td>
                 </tr>
             </table>
@@ -131,6 +131,9 @@
         <form method="get" th:action="@{/books/downloadFile}">
             <table>
                 <tr>
+                    <td>
+                        <input type="file" name="file"/>
+                    </td>
                     <td>
                         <input type = "submit" value="Click to Download">
                     </td>

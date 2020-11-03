@@ -1,6 +1,6 @@
 package org.example.web.controllers;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 import org.example.app.exceptions.UploadingException;
 import org.example.app.services.BookService;
 import org.example.web.dto.Book;
@@ -9,37 +9,20 @@ import org.example.web.dto.BookToRemove;
 import org.example.web.dto.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.multipart.MultipartFile;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.log4j.Logger;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotBlank;
 
 
 @Controller
@@ -79,15 +62,10 @@ public class BooksShelfController {
             model.addAttribute("bookList", bookService.getAllBooks());
             return "books_shelf";
         }else {
-            // Исключить возможность сохранения пустых записей
-            if (!book.getTitle().equals("") || !book.getAuthor().equals("")) {
-                bookService.saveBook(book);
-                logger.info("Successfully saved! Total books: " + bookService.getAllBooks().size());
-            } else {
-                logger.info("!!! Necessary fields of book NOT entered");
-            }
-            return "redirect:/books/shelf";
+            bookService.saveBook(book);
+            logger.info("Successfully saved! Total books: " + bookService.getAllBooks().size());
         }
+            return "redirect:/books/shelf";
     }
 
     @PostMapping("/remove/id")
@@ -119,27 +97,23 @@ public class BooksShelfController {
                 model.addAttribute("bookList", bookService.getAllBooks());
                 return "books_shelf";
         }else {
-            if (bookService.removeByItem(bookToRemove) ){
-                logger.info("---Removing Book(s) Completed!");
+            bookService.removeByItem(bookToRemove);
+            logger.info("Removing Book(s) Completed!");
             }
             return "redirect:/books/shelf";
-        }
     }
 
     @PostMapping("/search")
     public String searchBook(@Valid Filter filter,
                              BindingResult bindingResult,
                              Model model){
+        model.addAttribute("book", new Book());
+        model.addAttribute("bookIdToRemove", new BookIdToRemove());
+        model.addAttribute("bookToRemove", new BookToRemove());
+
         if (bindingResult.hasFieldErrors("searchAuthor") && bindingResult.hasFieldErrors("searchTitle")){
-            model.addAttribute("book", new Book());
-            model.addAttribute("bookIdToRemove", new BookIdToRemove());
-            model.addAttribute("bookToRemove", new BookToRemove());
             model.addAttribute("bookList", bookService.getAllBooks());
         }else {
-            logger.info("---GET books/shelf page");
-            model.addAttribute("book", new Book());
-            model.addAttribute("bookIdToRemove", new BookIdToRemove());
-            model.addAttribute("bookToRemove", new BookToRemove());
             model.addAttribute("bookList", bookService.searchBook(filter.getSearchAuthor(), filter.getSearchTitle()));
         }
         return "books_shelf";
@@ -173,29 +147,28 @@ public class BooksShelfController {
     }
 
     @GetMapping("/downloadFile")
-    public String download(HttpServletRequest request,
-                         HttpServletResponse response) {
-        File file =new File("D:\\apache-tomcat-9.0.37\\external_uploads\\text.txt");
-        try
-        {
-            InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
-            String mimeType = URLConnection.guessContentTypeFromStream(inputStream);
+    public void download(@RequestParam("file") String fileName, HttpServletResponse response)  throws  UploadingException{
+        //uploaded folder in server directory
+        String rootPath = System.getProperty("catalina.home");
+        File dir = new File(rootPath + File.separator + "external_uploads");
 
-            if (mimeType == null){
-                mimeType = "application/octet-stream";
+        Path file = Paths.get(String.valueOf(dir), fileName);
+
+        if (fileName.length() == 0){
+            throw new UploadingException("Please Choose the File to Download");
+        }
+
+        if (Files.exists(file)) {
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName);
+            response.setContentType("application/octet-stream");
+            try {
+                Files.copy(file, response.getOutputStream());
+                response.getOutputStream().flush();
+                response.getOutputStream().close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-            response.setContentType(mimeType);
-            response.setContentLength((int)file.length());
-            response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
-
-            FileCopyUtils.copy(inputStream, response.getOutputStream());
-
         }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return "redirect:/books/shelf";
     }
 
     @ExceptionHandler(UploadingException.class)

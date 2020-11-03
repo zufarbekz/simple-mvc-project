@@ -12,7 +12,7 @@ public interface ProjectRepository<T> {
 
     void removeItemByID(Integer bookID);
 
-    boolean removeItem(BookToRemove bookToRemove);
+    void removeItem(BookToRemove bookToRemove);
 
     List<T> find(String searchAuthor, String searchTitle);
 
